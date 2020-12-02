@@ -35,6 +35,7 @@ import kotlin.time.measureTimedValue
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 
@@ -200,10 +201,11 @@ abstract class LocalScanner(name: String, config: ScannerConfiguration) : Scanne
     }
 
     override suspend fun scanPackages(
+        channel: Channel<Pair<Package, List<ScanResult>>>,
         packages: List<Package>,
         outputDirectory: File,
         downloadDirectory: File
-    ): Map<Package, List<ScanResult>> {
+    ) {
         val storageDispatcher = Executors.newFixedThreadPool(
             NUM_STORAGE_THREADS,
             NamedThreadFactory(ScanResultsStorage.storage.name)
@@ -211,26 +213,29 @@ abstract class LocalScanner(name: String, config: ScannerConfiguration) : Scanne
 
         val scanDispatcher = Executors.newSingleThreadExecutor(NamedThreadFactory(scannerName)).asCoroutineDispatcher()
 
-        return try {
+        try {
             coroutineScope {
                 packages.withIndex().map { (index, pkg) ->
                     val packageIndex = "(${index + 1} of ${packages.size})"
 
                     async {
-                        pkg to scanPackage(
-                            pkg,
-                            packageIndex,
-                            downloadDirectory,
-                            outputDirectory,
-                            storageDispatcher,
-                            scanDispatcher
+                        channel.send(
+                            pkg to scanPackage(
+                                pkg,
+                                packageIndex,
+                                downloadDirectory,
+                                outputDirectory,
+                                storageDispatcher,
+                                scanDispatcher
+                            )
                         )
                     }
-                }.associate { it.await() }
+                }
             }
         } finally {
             storageDispatcher.close()
             scanDispatcher.close()
+            channel.close()
         }
     }
 
