@@ -260,6 +260,14 @@ abstract class LocalScanner(name: String, config: ScannerConfiguration) : Scanne
                             "and $scannerCriteria, not scanning the package again $packageIndex."
                 }
 
+                storedResults.forEach {
+                    if (!archiver.hasArchive(pkg.id.toPath() + "/" + it.provenance.hash())) {
+                        val downloadResult = Downloader.download(pkg, downloadDirectory.resolve(pkg.id.toPath()))
+
+                        archiveFiles(downloadResult.downloadDirectory, pkg.id, it.provenance)
+                    }
+                }
+
                 // Due to a temporary bug that has been fixed by now the scan results for packages were not properly
                 // filtered. Filter them again to fix the problem also scan storage entries which exhibit that problem.
                 // TODO: This filtering can be removed after a while.
