@@ -29,6 +29,14 @@ data class HttpFileStorageConfiguration(
     val url: String,
 
     /**
+     * The postfix that is appended to the combination of the url and some additional path. Some storages process
+     * authentication via parameters that are within the final URL, so certain credentials can be stored in this
+     * postfix, e.g, "?user=standard&pwd=123". Thus, the final URL could be
+     * "https://example.com/storage/path?user=standard&pwd=123".
+     */
+    val urlPostFix: String,
+
+    /**
      * Custom headers that are added to all HTTP requests. As headers are likely to contain sensitive information like
      * credentials, values are masked when this class is serialized with Jackson.
      */
