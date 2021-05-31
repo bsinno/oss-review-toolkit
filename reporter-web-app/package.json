@@ -15,7 +15,7 @@
     },
     "dependencies": {
         "@ant-design/icons": "^4.5.0",
-        "antd": "^4.14.0",
+        "antd": "^4.16.1",
         "markdown-to-jsx": "^7.1.2",
         "memoize-one": "^5.1.1",
         "pako": "^2.0.3",
