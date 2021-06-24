@@ -22,11 +22,9 @@ package org.ossreviewtoolkit.analyzer.integration
 import io.kotest.core.spec.Spec
 import io.kotest.core.spec.style.StringSpec
 import io.kotest.inspectors.forAll
-import io.kotest.matchers.collections.beEmpty
 import io.kotest.matchers.collections.containExactly
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNot
 import io.kotest.matchers.types.shouldBeTypeOf
 
 import java.io.File
@@ -39,6 +37,7 @@ import org.ossreviewtoolkit.downloader.Downloader
 import org.ossreviewtoolkit.downloader.VersionControlSystem
 import org.ossreviewtoolkit.model.Identifier
 import org.ossreviewtoolkit.model.Package
+import org.ossreviewtoolkit.model.Project
 import org.ossreviewtoolkit.model.Provenance
 import org.ossreviewtoolkit.model.RepositoryProvenance
 import org.ossreviewtoolkit.model.config.DownloaderConfiguration
@@ -133,11 +132,16 @@ abstract class AbstractIntegrationSpec : StringSpec() {
                     VersionControlSystem.forType(result.project.vcsProcessed.type) shouldBe
                             VersionControlSystem.forType(pkg.vcs.type)
                     result.project.vcsProcessed.url shouldBe pkg.vcs.url
-                    result.project.scopes shouldNot beEmpty()
-                    result.packages shouldNot beEmpty()
+                    result.project.hasScopes() shouldBe true
+                    (results.dependencyGraph != null || result.packages.isNotEmpty()) shouldBe true
                     result.collectIssues().keys should containExactly(identifiersWithExpectedIssues)
                 }
             }
         }
     }
 }
+
+/**
+ * Check whether this [Project] has defined scopes.
+ */
+private fun Project.hasScopes(): Boolean = !scopeDependencies.isNullOrEmpty() xor !scopeNames.isNullOrEmpty()
