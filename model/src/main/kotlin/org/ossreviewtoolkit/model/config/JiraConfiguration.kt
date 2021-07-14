@@ -17,11 +17,21 @@
  * License-Filename: LICENSE
  */
 
-package org.ossreviewtoolkit.model.config
+package org.ossreviewtoolkit.model.org.ossreviewtoolkit.model.config
 
-import org.ossreviewtoolkit.model.org.ossreviewtoolkit.model.config.JiraConfiguration
+data class JiraConfiguration(
+    /**
+     * The host for the Jira instance.
+     */
+    val host: String,
 
-data class NotifierConfiguration(
-    val mail: SendMailConfiguration? = null,
-    val jira: JiraConfiguration? = null
+    /**
+     * The username used for the authentication.
+     */
+    val username: String,
+
+    /**
+     * The password user for the authentication.
+     */
+    val password: String
 )
