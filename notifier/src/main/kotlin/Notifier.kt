@@ -25,6 +25,7 @@ import org.ossreviewtoolkit.model.NotifierRun
 import org.ossreviewtoolkit.model.OrtResult
 import org.ossreviewtoolkit.model.config.NotifierConfiguration
 import org.ossreviewtoolkit.notifier.modules.EmailNotifier
+import org.ossreviewtoolkit.notifier.modules.JiraNotifier
 import org.ossreviewtoolkit.utils.ScriptRunner
 
 class Notifier(ortResult: OrtResult = OrtResult.EMPTY, config: NotifierConfiguration = NotifierConfiguration()) :
@@ -45,6 +46,7 @@ class Notifier(ortResult: OrtResult = OrtResult.EMPTY, config: NotifierConfigura
         engine.put("ortResult", ortResult)
 
         config.mail?.let { engine.put("emailClient", EmailNotifier(it)) }
+        config.jira?.let { engine.put("jiraClient", JiraNotifier(it)) }
     }
 
     override fun run(script: String): NotifierRun {

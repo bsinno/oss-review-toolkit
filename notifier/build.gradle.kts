@@ -30,4 +30,24 @@ dependencies {
     implementation(project(":utils"))
 
     implementation("org.apache.commons:commons-email:$apacheCommonsEmailVersion")
+    implementation("com.atlassian.jira:jira-rest-java-client-api:5.2.2")
+    implementation("com.atlassian.jira:jira-rest-java-client-core:5.2.2")
+    implementation("org.glassfish.jersey.core:jersey-common:2.4.1")
+
+    runtimeOnly("com.atlassian.fugue:fugue:2.6.2")
+
+    //implementation("com.google.guava:guava:14.0-rc1")
+}
+
+repositories {
+    mavenCentral()
+    exclusiveContent {
+        forRepository {
+            maven("https://packages.atlassian.com/maven-external")
+        }
+
+        filter {
+            includeGroupByRegex("com\\.atlassian\\..*")
+        }
+    }
 }
